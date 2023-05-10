@@ -10,14 +10,11 @@ import android.util.Log
 import android.util.Xml
 import android.widget.Toast
 import com.omarea.common.model.SelectItem
-import com.omarea.common.shared.ResourceStringResolver
 import com.omarea.krscript.executor.ExtractAssets
 import com.omarea.krscript.executor.ScriptEnvironmen
 import com.omarea.krscript.model.*
 import org.xmlpull.v1.XmlPullParser
 import java.io.InputStream
-import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * Created by Hello on 2018/04/01.
@@ -25,7 +22,6 @@ import kotlin.collections.ArrayList
 class PageConfigReader {
     private var context: Context
     private var pageConfig: String = ""
-    private lateinit var resourceStringResolver: ResourceStringResolver
 
     // 读取pageConfig时自动获得
     private var pageConfigAbsPath: String = ""
@@ -33,16 +29,14 @@ class PageConfigReader {
     private var parentDir: String = ""
 
     constructor(context: Context, pageConfig: String, parentDir: String?) {
-        this.context = context
-        this.pageConfig = pageConfig
-        this.parentDir = parentDir ?: ""
-        resourceStringResolver = ResourceStringResolver(context)
+        this.context = context;
+        this.pageConfig = pageConfig;
+        this.parentDir = parentDir ?: "";
     }
 
     constructor(context: Context, pageConfigStream: InputStream) {
-        this.context = context
-        this.pageConfigStream = pageConfigStream
-        resourceStringResolver = ResourceStringResolver(context)
+        this.context = context;
+        this.pageConfigStream = pageConfigStream;
     }
 
     fun readConfigXml(): ArrayList<NodeInfoBase>? {
@@ -58,7 +52,7 @@ class PageConfigReader {
                 }
             } catch (ex: Exception) {
                 Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(context, "Page configuration parsing error!\n" + ex.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "解析配置文件失败\n" + ex.message, Toast.LENGTH_LONG).show()
                 }
                 Log.e("KrConfig Fail！", "" + ex.message)
             }
@@ -232,7 +226,7 @@ class PageConfigReader {
             val actionParamInfo = actionParamInfo!!
             for (i in 0 until parser.attributeCount) {
                 val attrName = parser.getAttributeName(i)
-                val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
+                val attrValue = parser.getAttributeValue(i)
                 when {
                     attrName == "name" -> actionParamInfo.name = attrValue
                     attrName == "label" -> actionParamInfo.label = attrValue
@@ -298,9 +292,8 @@ class PageConfigReader {
             val option = SelectItem()
             for (i in 0 until parser.attributeCount) {
                 val attrName = parser.getAttributeName(i)
-                val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
                 if (attrName == "val" || attrName == "value") {
-                    option.value = attrValue
+                    option.value = parser.getAttributeValue(i)
                 }
             }
             option.title = parser.nextText()
@@ -339,16 +332,15 @@ class PageConfigReader {
                 val option = runnableNode(PageMenuOption(pageConfigAbsPath), parser) as PageMenuOption?
                 if (option != null) {
                     for (i in 0 until parser.attributeCount) {
-                        val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
                         when (parser.getAttributeName(i)) {
                             "type" -> {
-                                option.type = attrValue
+                                option.type = parser.getAttributeValue(i)
                             }
                             "style" -> {
-                                option.isFab = attrValue == "fab"
+                                option.isFab = parser.getAttributeValue(i) == "fab"
                             }
                             "suffix" -> {
-                                val suffix = attrValue.toLowerCase(Locale.ENGLISH).trim { it <= ' ' }
+                                val suffix = parser.getAttributeValue(i).toLowerCase().trim { it <= ' ' }
 
                                 if (option.mime.isEmpty()) {
                                     option.mime = Suffix2Mime().toMime(suffix)
@@ -357,7 +349,7 @@ class PageConfigReader {
                                 option.suffix = suffix
                             }
                             "mime" -> {
-                                option.mime = attrValue.toLowerCase(Locale.ENGLISH)
+                                option.mime = parser.getAttributeValue(i).toLowerCase()
                             }
                         }
                     }
@@ -391,7 +383,7 @@ class PageConfigReader {
         val groupInfo = GroupNode(pageConfigAbsPath)
         for (i in 0 until parser.attributeCount) {
             val attrName = parser.getAttributeName(i)
-            val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
+            val attrValue = parser.getAttributeValue(i)
             when (attrName) {
                 "key", "index", "id" -> groupInfo.key = attrValue.trim()
                 "title" -> groupInfo.title = attrValue
@@ -405,7 +397,7 @@ class PageConfigReader {
     private fun clickbleNode(clickableNode: ClickableNode, parser: XmlPullParser): ClickableNode? {
         return (mainNode(clickableNode, parser) as ClickableNode?)?.apply {
             for (i in 0 until parser.attributeCount) {
-                val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
+                val attrValue = parser.getAttributeValue(i)
                 when (parser.getAttributeName(i)) {
                     "lock", "lock-state", "locked" -> locked = (attrValue == "1" || attrValue == "true" || attrValue == "locked")
                     "min-sdk", "sdk-min" -> minSdkVersion = attrValue.trim().toInt()
@@ -427,7 +419,7 @@ class PageConfigReader {
         val clickableNode = clickbleNode(node, parser) as RunnableNode?
         if (clickableNode != null) {
             for (i in 0 until parser.attributeCount) {
-                val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
+                val attrValue = parser.getAttributeValue(i)
                 when (parser.getAttributeName(i)) {
                     "confirm" -> clickableNode.confirm = (attrValue == "confirm" || attrValue == "true" || attrValue == "1")
                     "warn", "warning" -> {
@@ -466,7 +458,7 @@ class PageConfigReader {
 
     private fun mainNode(nodeInfoBase: NodeInfoBase, parser: XmlPullParser): NodeInfoBase? {
         for (i in 0 until parser.attributeCount) {
-            val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
+            val attrValue = parser.getAttributeValue(i)
             when (parser.getAttributeName(i)) {
                 "key", "index", "id" -> nodeInfoBase.key = attrValue.trim()
                 "title" -> nodeInfoBase.title = attrValue
@@ -477,14 +469,14 @@ class PageConfigReader {
                     }
                 }
                 "desc-sh" -> {
-                    nodeInfoBase.descSh = attrValue
+                    nodeInfoBase.descSh = parser.getAttributeValue(i)
                     nodeInfoBase.desc = executeResultRoot(context, nodeInfoBase.descSh)
                 }
                 "summary" -> {
-                    nodeInfoBase.summary = attrValue
+                    nodeInfoBase.summary = parser.getAttributeValue(i)
                 }
                 "summary-sh" -> {
-                    nodeInfoBase.summarySh = attrValue
+                    nodeInfoBase.summarySh = parser.getAttributeValue(i)
                     nodeInfoBase.summary = executeResultRoot(context, nodeInfoBase.summarySh)
                 }
             }
@@ -495,9 +487,9 @@ class PageConfigReader {
     // TODO: 整理Title和Desc
     // TODO: 整理ReloadPage
     private fun pageNode(page: PageNode, parser: XmlPullParser): PageNode {
-        for (i in 0 until parser.attributeCount) {
-            val attrName = parser.getAttributeName(i)
-            val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
+        for (attrIndex in 0 until parser.attributeCount) {
+            val attrName = parser.getAttributeName(attrIndex)
+            val attrValue = parser.getAttributeValue(attrIndex)
             when (attrName) {
                 "config" -> page.pageConfigPath = attrValue
                 "html" -> page.onlineHtmlPage = attrValue
@@ -516,9 +508,9 @@ class PageConfigReader {
     }
 
     private fun pickerNode(pickerNode: PickerNode, parser: XmlPullParser) {
-        for (i in 0 until parser.attributeCount) {
-            val attrName = parser.getAttributeName(i)
-            val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
+        for (attrIndex in 0 until parser.attributeCount) {
+            val attrName = parser.getAttributeName(attrIndex)
+            val attrValue = parser.getAttributeValue(attrIndex)
             when (attrName) {
                 "option-sh", "options-sh", "options-su" -> {
                     if (pickerNode.options == null)
@@ -538,9 +530,8 @@ class PageConfigReader {
     private fun descNode(nodeInfoBase: NodeInfoBase, parser: XmlPullParser) {
         for (i in 0 until parser.attributeCount) {
             val attrName = parser.getAttributeName(i)
-            val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
             if (attrName == "su" || attrName == "sh" || attrName == "desc-sh") {
-                nodeInfoBase.descSh = attrValue
+                nodeInfoBase.descSh = parser.getAttributeValue(i)
                 nodeInfoBase.desc = executeResultRoot(context, nodeInfoBase.descSh)
             }
         }
@@ -551,9 +542,8 @@ class PageConfigReader {
     private fun summaryNode(nodeInfoBase: NodeInfoBase, parser: XmlPullParser) {
         for (i in 0 until parser.attributeCount) {
             val attrName = parser.getAttributeName(i)
-            val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
             if (attrName == "su" || attrName == "sh" || attrName == "summary-sh") {
-                nodeInfoBase.summarySh = attrValue
+                nodeInfoBase.summarySh = parser.getAttributeValue(i)
                 nodeInfoBase.summary = executeResultRoot(context, nodeInfoBase.summarySh)
             }
         }
@@ -563,13 +553,11 @@ class PageConfigReader {
 
     private fun resourceNode(parser: XmlPullParser) {
         for (i in 0 until parser.attributeCount) {
-            val attrName = parser.getAttributeName(i)
-            val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
-            if (attrName == "file") {
-                val file = attrValue.trim()
+            if (parser.getAttributeName(i) == "file") {
+                val file = parser.getAttributeValue(i).trim()
                 ExtractAssets(context).extractResource(file)
-            } else if (attrName == "dir") {
-                val file = attrValue.trim()
+            } else if (parser.getAttributeName(i) == "dir") {
+                val file = parser.getAttributeValue(i).trim()
                 ExtractAssets(context).extractResources(file)
             }
         }
@@ -603,7 +591,7 @@ class PageConfigReader {
         val textRow = TextNode.TextRow()
         for (i in 0 until parser.attributeCount) {
             val attrName = parser.getAttributeName(i).toLowerCase()
-            val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
+            val attrValue = parser.getAttributeValue(i)
             try {
                 when (attrName) {
                     "bold", "b" -> textRow.bold = (attrValue == "1" || attrValue == "true" || attrValue == "bold")
@@ -655,9 +643,8 @@ class PageConfigReader {
             val option = SelectItem()
             for (i in 0 until parser.attributeCount) {
                 val attrName = parser.getAttributeName(i)
-                val attrValue = resourceStringResolver.resolveRow(parser.getAttributeValue(i))
                 if (attrName == "val" || attrName == "value") {
-                    option.value = attrValue
+                    option.value = parser.getAttributeValue(i)
                 }
             }
             option.title = parser.nextText()

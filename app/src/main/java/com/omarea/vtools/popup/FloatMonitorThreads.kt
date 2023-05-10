@@ -11,9 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
-import com.omarea.Scene
 import com.omarea.data.GlobalStatus
-import com.omarea.library.shell.ProcessUtilsSimple
+import com.omarea.library.shell.ProcessUtils2
 import com.omarea.vtools.R
 import java.util.*
 
@@ -29,12 +28,12 @@ class FloatMonitorThreads(private val mContext: Context) {
 
     private var view: View = LayoutInflater.from(mContext).inflate(R.layout.fw_threads, null)
     private var textView: TextView = view.findViewById(R.id.fw_logs)
-    private val processUtils = ProcessUtilsSimple(Scene.context)
+    private val processUtils = ProcessUtils2()
     private val handle = Handler(Looper.getMainLooper())
 
     val supported: Boolean
         get () {
-            return processUtils.supported()
+            return processUtils.supported(mContext)
         }
 
     private var params: WindowManager.LayoutParams = WindowManager.LayoutParams().apply {

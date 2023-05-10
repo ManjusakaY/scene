@@ -21,8 +21,8 @@ class DialogElectricityUnit {
         val globalSPF = context.getSharedPreferences(SpfConfig.GLOBAL_SPF, Context.MODE_PRIVATE)
 
         val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
-        var currentNow = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
-        val defaultUnit = if (Build.MANUFACTURER.toUpperCase() == "XIAOMI") {
+        val currentNow = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+        var defaultUnit = if (Build.MANUFACTURER.toUpperCase() == "XIAOMI") {
             SpfConfig.GLOBAL_SPF_CURRENT_NOW_UNIT_DEFAULT
         } else {
             if (GlobalStatus.batteryStatus == BatteryManager.BATTERY_STATUS_DISCHARGING) {
@@ -50,7 +50,6 @@ class DialogElectricityUnit {
             }
         }
         var unit = globalSPF.getInt(SpfConfig.GLOBAL_SPF_CURRENT_NOW_UNIT, defaultUnit)
-        val origin = unit
         var alertDialog: DialogHelper.DialogWrap? = null
         val dialog = LayoutInflater.from(context).inflate(R.layout.dialog_electricity_unit, null)
         val electricity_adj_unit = dialog.findViewById<TextView>(R.id.electricity_adj_unit)
@@ -92,7 +91,7 @@ class DialogElectricityUnit {
             schedule(object : TimerTask() {
                 override fun run() {
                     handler.post {
-                        currentNow = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+                        batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
                         try {
                             val currentMA = currentNow / unit
                             electricity_adj_sample.setText((if (currentMA >= 0) "+" else "") + currentMA + "mA")
@@ -104,9 +103,7 @@ class DialogElectricityUnit {
         }
 
         alertDialog = DialogHelper.customDialog(context, dialog, false).setOnDismissListener {
-            if (origin != unit) {
-                ChargeSpeedStore(context).clearAll()
-            }
+            ChargeSpeedStore(context).clearAll()
             timer.cancel()
         }
     }

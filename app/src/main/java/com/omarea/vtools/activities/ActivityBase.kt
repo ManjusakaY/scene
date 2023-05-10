@@ -44,9 +44,8 @@ open class ActivityBase : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        // super.onBackPressed()
-        // FIX: Activity(IRequestFinishCallback$Stub) 内存泄露
-        finishAfterTransition()
+        super.onBackPressed()
+        finish()
     }
 
     protected fun excludeFromRecent() {

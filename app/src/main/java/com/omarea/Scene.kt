@@ -12,7 +12,6 @@ import com.omarea.common.shared.FileWrite
 import com.omarea.common.shell.ShellExecutor
 import com.omarea.data.EventBus
 import com.omarea.data.customer.ChargeCurve
-import com.omarea.data.customer.PowerUtilizationCurve
 import com.omarea.data.customer.ScreenOffCleanup
 import com.omarea.data.publisher.BatteryState
 import com.omarea.data.publisher.ScreenState
@@ -152,8 +151,6 @@ class Scene : Application() {
 
         // 充电曲线
         EventBus.subscribe(ChargeCurve(this))
-        // 耗电曲线
-        EventBus.subscribe(PowerUtilizationCurve(this))
 
         // 息屏自动关闭悬浮窗
         EventBus.subscribe(ScreenOffCleanup(context))

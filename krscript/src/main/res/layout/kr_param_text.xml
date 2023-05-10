@@ -14,6 +14,5 @@
         android:text=""
         android:maxLines="8"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:breakStrategy="simple" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

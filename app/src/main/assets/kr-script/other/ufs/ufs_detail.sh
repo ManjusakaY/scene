@@ -1,8 +1,4 @@
-if [[ -f /sys/devices/platform/soc/1d84000.ufshc/health_descriptor/life_time_estimation_a ]]; then
-  bDeviceLifeTimeEstA=$(cat /sys/devices/platform/soc/1d84000.ufshc/health_descriptor/life_time_estimation_a)
-else
-  bDeviceLifeTimeEstA=$(cat /sys/kernel/debug/*.ufshc/dump_health_desc 2>/dev/null | grep bDeviceLifeTimeEstA | cut -f2 -d '=' | cut -f2 -d ' ')
-fi
+bDeviceLifeTimeEstA=$(cat /sys/kernel/debug/*.ufshc/dump_health_desc | grep bDeviceLifeTimeEstA | cut -f2 -d '=' | cut -f2 -d ' ')
 # 0x00	未找到有关设备使用寿命的信息。
 # 0x01	设备估计使用寿命的 0% 到 10%。
 # 0x02	设备估计使用寿命的 10% 到 20%。
@@ -57,11 +53,8 @@ case $bDeviceLifeTimeEstA in
   echo '已使用寿命 未知'
 ;;
 esac
-if [[ -f /sys/devices/platform/soc/1d84000.ufshc/health_descriptor/eol_info ]]; then
-  bPreEOLInfo=$(cat /sys/devices/platform/soc/1d84000.ufshc/health_descriptor/eol_info)
-else
-  bPreEOLInfo=$(cat /sys/kernel/debug/*.ufshc/dump_health_desc | grep bPreEOLInfo | cut -f2 -d '=' | cut -f2 -d ' ')
-fi
+
+bPreEOLInfo=$(cat /sys/kernel/debug/*.ufshc/dump_health_desc | grep bPreEOLInfo | cut -f2 -d '=' | cut -f2 -d ' ')
 # 0x00	未定义成员。
 # 0x01	正常。消耗不到 80% 的保留区块。
 # 0x02	消耗了 80% 的保留区块。

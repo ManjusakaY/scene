@@ -8,6 +8,8 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.widget.Button
@@ -17,21 +19,17 @@ import androidx.core.content.PermissionChecker
 import com.omarea.Scene
 import com.omarea.common.ui.DialogHelper
 import com.omarea.common.ui.ThemeMode
-import com.omarea.library.permissions.GeneralPermissions
 import com.omarea.permissions.Busybox
 import com.omarea.permissions.CheckRootStatus
 import com.omarea.permissions.WriteSettings
 import com.omarea.store.SpfConfig
 import com.omarea.vtools.R
 import kotlinx.android.synthetic.main.activity_start_splash.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.*
 
 class ActivityStartSplash : Activity() {
     companion object {
-        var finished = false
+        public var finished = false
     }
 
     private lateinit var globalSPF: SharedPreferences
@@ -107,12 +105,14 @@ class ActivityStartSplash : Activity() {
         }
 
         //  得到当前界面的装饰视图
-        val decorView = window.decorView;
-        //让应用主题内容占用系统状态栏的空间,注意:下面两个参数必须一起使用 stable 牢固的
-        val option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        decorView.systemUiVisibility = option
-        //设置状态栏颜色为透明
-        getWindow().setStatusBarColor(Color.TRANSPARENT)
+        if (Build.VERSION.SDK_INT >= 21) {
+            val decorView = getWindow().getDecorView();
+            //让应用主题内容占用系统状态栏的空间,注意:下面两个参数必须一起使用 stable 牢固的
+            val option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            decorView.setSystemUiVisibility(option);
+            //设置状态栏颜色为透明
+            getWindow().setStatusBarColor(Color.TRANSPARENT)
+        }
     }
 
     private fun getColorAccent(): Int {
@@ -128,21 +128,27 @@ class ActivityStartSplash : Activity() {
         checkRoot()
     }
 
-    private class CheckFileWrite(private val context: ActivityStartSplash) : Runnable {
+    private class CheckFileWirte(private val context: ActivityStartSplash) : Runnable {
         override fun run() {
             context.start_state_text.text = "检查并获取必需权限……"
             context.hasRoot = true
 
             context.checkFileWrite(InstallBusybox(context))
         }
+
     }
 
     private class InstallBusybox(private val context: ActivityStartSplash) : Runnable {
         override fun run() {
             context.start_state_text.text = "检查Busybox是否安装..."
-            Busybox(context).forceInstall {
-                context.startToFinish()
-            }
+            Busybox(context).forceInstall(BusyboxInstalled(context))
+        }
+
+    }
+
+    private class BusyboxInstalled(private val context: ActivityStartSplash) : Runnable {
+        override fun run() {
+            context.startToFinish()
         }
 
     }
@@ -153,16 +159,12 @@ class ActivityStartSplash : Activity() {
      * 检查权限 主要是文件读写权限
      */
     private fun checkFileWrite(next: Runnable) {
-        val activity = this
-        GlobalScope.launch(Dispatchers.Main) {
-            if (hasRoot) {
-                GeneralPermissions(activity).grantPermissions()
-            }
-
+        Thread {
+            CheckRootStatus.grantPermission(this)
             if (!(checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE) && checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     ActivityCompat.requestPermissions(
-                            activity,
+                            this@ActivityStartSplash,
                             arrayOf(
                                     Manifest.permission.READ_EXTERNAL_STORAGE,
                                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -174,7 +176,7 @@ class ActivityStartSplash : Activity() {
                     )
                 } else {
                     ActivityCompat.requestPermissions(
-                            activity,
+                            this@ActivityStartSplash,
                             arrayOf(
                                     Manifest.permission.READ_EXTERNAL_STORAGE,
                                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -185,27 +187,24 @@ class ActivityStartSplash : Activity() {
                     )
                 }
             }
-
-            // 请求写入设置权限
-            val writeSettings = WriteSettings()
-            if (!writeSettings.checkPermission(applicationContext)) {
-                if (hasRoot) {
-                    writeSettings.setPermissionByRoot(applicationContext)
-                } else {
-                    writeSettings.requestPermission(applicationContext)
+            myHandler.post {
+                val writeSettings = WriteSettings()
+                if (!writeSettings.getPermission(applicationContext)) {
+                    writeSettings.setPermission(applicationContext)
                 }
+                next.run()
             }
-            next.run()
-        }
+        }.start()
     }
 
     private var hasRoot = false
+    private var myHandler = Handler(Looper.getMainLooper())
 
     private fun checkRoot() {
         val disableSeLinux = globalSPF.getBoolean(SpfConfig.GLOBAL_SPF_DISABLE_ENFORCE, false)
-        CheckRootStatus(this, {
+        CheckRootStatus(this, Runnable {
             if (globalSPF.getBoolean(SpfConfig.GLOBAL_SPF_CONTRACT, false)) {
-                CheckFileWrite(this).run()
+                CheckFileWirte(this).run()
             } else {
                 initContractAction()
             }
@@ -216,7 +215,7 @@ class ActivityStartSplash : Activity() {
      * 启动完成
      */
     private fun startToFinish() {
-        start_state_text.text = "Completed!"
+        start_state_text.text = "启动完成！"
 
         val intent = Intent(this.applicationContext, ActivityMain::class.java)
         startActivity(intent)

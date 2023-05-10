@@ -324,7 +324,7 @@ class ActivityCpuControl : ActivityBase() {
 
     private fun bindCpuSetConfig(currentState: String, callback: PickerCallback2) {
         if (currentState.isNotEmpty()) {
-            val coreState = parseCpuset(currentState)
+            val coreState = parsetCpuset(currentState)
             openMultiplePicker("选择要使用的核心",
                     getCoreList(coreState),
                     object: PickerCallback2 {
@@ -340,7 +340,7 @@ class ActivityCpuControl : ActivityBase() {
         cpuset_bg.setOnClickListener {
             bindCpuSetConfig(status.cpusetBackground, object: PickerCallback2 {
                 override fun onSelected(result: BooleanArray) {
-                    status.cpusetBackground = parseCpuset(result)
+                    status.cpusetBackground = parsetCpuset(result)
                     KernelProrp.setProp("/dev/cpuset/background/cpus", status.cpusetBackground)
                 }
             })
@@ -348,7 +348,7 @@ class ActivityCpuControl : ActivityBase() {
         cpuset_system_bg.setOnClickListener {
             bindCpuSetConfig(status.cpusetSysBackground, object: PickerCallback2 {
                 override fun onSelected(result: BooleanArray) {
-                    status.cpusetSysBackground = parseCpuset(result)
+                    status.cpusetSysBackground = parsetCpuset(result)
                     KernelProrp.setProp("/dev/cpuset/system-background/cpus", status.cpusetSysBackground)
                 }
             })
@@ -356,7 +356,7 @@ class ActivityCpuControl : ActivityBase() {
         cpuset_foreground.setOnClickListener {
             bindCpuSetConfig(status.cpusetForeground, object: PickerCallback2 {
                 override fun onSelected(result: BooleanArray) {
-                    status.cpusetForeground = parseCpuset(result)
+                    status.cpusetForeground = parsetCpuset(result)
                     KernelProrp.setProp("/dev/cpuset/foreground/cpus", status.cpusetForeground)
                 }
             })
@@ -364,7 +364,7 @@ class ActivityCpuControl : ActivityBase() {
         cpuset_top_app.setOnClickListener {
             bindCpuSetConfig(status.cpusetTopApp, object: PickerCallback2 {
                 override fun onSelected(result: BooleanArray) {
-                    status.cpusetTopApp = parseCpuset(result)
+                    status.cpusetTopApp = parsetCpuset(result)
                     KernelProrp.setProp("/dev/cpuset/top-app/cpus", status.cpusetTopApp)
                 }
             })
@@ -460,12 +460,12 @@ class ActivityCpuControl : ActivityBase() {
                     msg.append(param.value)
                     msg.append("\n")
                 }
-                DialogHelper.helpInfo(this, "调度器参数", msg.toString())
+                DialogHelper.alert(this, "调度器参数", msg.toString())
             }
         }
     }
 
-    private fun parseCpuset(booleanArray: BooleanArray): String {
+    private fun parsetCpuset(booleanArray: BooleanArray): String {
         val stringBuilder = StringBuilder()
         for (index in booleanArray.indices) {
             if (booleanArray.get(index)) {
@@ -478,7 +478,7 @@ class ActivityCpuControl : ActivityBase() {
         return stringBuilder.toString()
     }
 
-    private fun parseCpuset(value: String): BooleanArray {
+    private fun parsetCpuset(value: String): BooleanArray {
         val cores = ArrayList<Boolean>()
         for (coreIndex in 0 until coreCount) {
             cores.add(false)
@@ -733,7 +733,7 @@ class ActivityCpuControl : ActivityBase() {
         val globalSPF = context.getSharedPreferences(SpfConfig.GLOBAL_SPF, Context.MODE_PRIVATE)
         val dynamic = AccessibleServiceHelper().serviceRunning(context) && globalSPF.getBoolean(SpfConfig.GLOBAL_SPF_DYNAMIC_CONTROL, SpfConfig.GLOBAL_SPF_DYNAMIC_CONTROL_DEFAULT)
         if (dynamic && (cpuModeName == null)) {
-            DialogHelper.helpInfo(this,
+            DialogHelper.alert(this,
                     "请注意",
                     "检测到你已开启“动态响应”，你手动对CPU、GPU的修改随时可能被覆盖。\n\n同时，手动调整参数还可能对“动态响应”的工作造成不利影响！").setCancelable(false)
         }

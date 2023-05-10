@@ -12,8 +12,7 @@
         android:paddingStart="20dp"
         android:paddingTop="15dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="6dp"
-        android:breakStrategy="simple" />
+        android:paddingBottom="6dp" />
 
     <ProgressBar
         android:id="@+id/shell_progress"
@@ -40,8 +39,7 @@
             android:paddingRight="20dp"
             android:paddingBottom="25dp"
             android:textSize="10dp"
-            android:typeface="monospace"
-            android:breakStrategy="simple" />
+            android:typeface="monospace" />
     </com.omarea.common.ui.OverScrollView>
 
     <LinearLayout

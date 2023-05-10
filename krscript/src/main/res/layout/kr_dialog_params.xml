@@ -21,7 +21,8 @@
 
         <TextView
             android:id="@+id/warn"
-            style="@style/dialogWarn" />
+            style="@style/dialogWarn"
+            android:text="" />
     </LinearLayout>
 
     <RelativeLayout

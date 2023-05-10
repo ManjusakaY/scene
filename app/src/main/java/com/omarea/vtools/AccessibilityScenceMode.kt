@@ -46,14 +46,6 @@ public class AccessibilityScenceMode : AccessibilityService(), IEventReceiver {
     }
 
     private var isLandscape = false
-    private val alwaysLandscapeOpt = true
-    public val landscapeOptimized: Boolean
-        get () {
-            if (alwaysLandscapeOpt || isLandscape) {
-                return true
-            }
-            return false
-        }
     private var inputMethods = ArrayList<String>()
 
     private var displayWidth = 1080
@@ -350,7 +342,7 @@ public class AccessibilityScenceMode : AccessibilityService(), IEventReceiver {
             try {
                 var lastWindow: AccessibilityWindowInfo? = null
                 // 最小窗口分辨率要求
-                val minWindowSize = if (landscapeOptimized && !isTablet) {
+                val minWindowSize = if (isLandscape && !isTablet) {
                     // 横屏时关注窗口大小，以显示区域大的主应用（平板设备不过滤窗口大小）
                     // 屏幕一半大小，用于判断窗口是否是小窗（比屏幕一半大小小的的应用认为是窗口化运行）
                     displayHeight * displayWidth / 2
@@ -399,7 +391,7 @@ public class AccessibilityScenceMode : AccessibilityService(), IEventReceiver {
                         continue
                     }
                     */
-                    if (landscapeOptimized) {
+                    if (isLandscape) {
                         val outBounds = Rect()
                         window.getBoundsInScreen(outBounds)
 
@@ -456,7 +448,7 @@ public class AccessibilityScenceMode : AccessibilityService(), IEventReceiver {
                     if (logs == null) {
                         if (eventWindowId == lastWindowId && event.packageName != null) {
                             val pa = event.packageName
-                            if (!(landscapeOptimized && inputMethods.contains(pa))) {
+                            if (!(isLandscape && inputMethods.contains(pa))) {
                                 GlobalStatus.lastPackageName = pa.toString()
                                 EventBus.publish(EventType.APP_SWITCH)
                             }
@@ -492,7 +484,7 @@ public class AccessibilityScenceMode : AccessibilityService(), IEventReceiver {
                         if (wp != null) {
                             logs.append("\n此前: ${GlobalStatus.lastPackageName}")
                             val pa = wp.toString()
-                            if (!(landscapeOptimized && inputMethods.contains(pa))) {
+                            if (!(isLandscape  && inputMethods.contains(pa))) {
                                 GlobalStatus.lastPackageName = pa
                                 EventBus.publish(EventType.APP_SWITCH)
                             }
@@ -562,7 +554,7 @@ public class AccessibilityScenceMode : AccessibilityService(), IEventReceiver {
 
             if (lastAnalyseThread == tid && wp != null) {
                 val pa = wp.toString()
-                if (!(landscapeOptimized && inputMethods.contains(pa))) {
+                if (!(isLandscape && inputMethods.contains(pa))) {
                     GlobalStatus.lastPackageName = pa
                     EventBus.publish(EventType.APP_SWITCH)
                 }

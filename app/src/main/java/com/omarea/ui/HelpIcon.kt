@@ -2,7 +2,6 @@ package com.omarea.ui
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageButton
 import android.widget.RelativeLayout
@@ -34,19 +33,6 @@ class HelpIcon : RelativeLayout {
                         }
                         */
                         DialogHelper.helpInfo(context!!, text)
-                    }
-                } else if (attrName == "layout_res") { // attrValue 因为Layout资源id，例如 app:layout_res="@layout/dialog_power_legend"
-                    val attrValue = getAttributeValue(i)
-                    view.findViewById<ImageButton>(android.R.id.button1).setOnClickListener {
-                        DialogHelper.helpInfo(
-                                context!!,
-                                context.getString(R.string.help_title),
-                                "",
-                                LayoutInflater.from(context).inflate(
-                                    attrValue.replace("@", "").toInt(),
-                                    null
-                                )
-                        )
                     }
                 }
             }

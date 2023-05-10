@@ -12,9 +12,8 @@ import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
-import com.omarea.Scene
-import com.omarea.library.shell.ProcessUtilsSimple
-import com.omarea.ui.AdapterProcessMini
+import com.omarea.library.shell.ProcessUtils2
+import com.omarea.ui.FloatProcessAdapter
 import com.omarea.vtools.R
 import java.util.*
 
@@ -32,7 +31,7 @@ class FloatTaskManager(private val context: Context) {
 
     val supported: Boolean
         get () {
-            return processUtils.supported()
+            return processUtils.supported(context)
         }
 
     /**
@@ -135,7 +134,7 @@ class FloatTaskManager(private val context: Context) {
     }
 
     private val handle = Handler(Looper.getMainLooper())
-    private val processUtils = ProcessUtilsSimple(Scene.context)
+    private val processUtils = ProcessUtils2()
 
     // 更新任务列表
     private fun updateData() {
@@ -148,7 +147,7 @@ class FloatTaskManager(private val context: Context) {
             return
         }
         handle.post {
-            (mView?.findViewById<ListView>(R.id.process_list)?.adapter as AdapterProcessMini?)?.setList(data)
+            (mView?.findViewById<ListView>(R.id.process_list)?.adapter as FloatProcessAdapter?)?.setList(data)
         }
     }
 
@@ -159,24 +158,24 @@ class FloatTaskManager(private val context: Context) {
         // mView?.setBackgroundColor(Color.WHITE)
 
         val process_list = mView?.findViewById<ListView>(R.id.process_list)!!.apply {
-            adapter = AdapterProcessMini(this.context)
+            adapter = FloatProcessAdapter(this.context)
         }
         val fw_float_minimize = mView?.findViewById<ImageButton>(R.id.fw_float_minimize)!!
         val process_filter = mView?.findViewById<TextView>(R.id.process_filter)!!
         val fw_float_pin = mView?.findViewById<View>(R.id.fw_float_pin)!!
 
-        var filterMode = AdapterProcessMini.FILTER_ANDROID
+        var filterMode = FloatProcessAdapter.FILTER_ANDROID
         // 过滤筛选
         process_filter.setOnClickListener {
-            filterMode = if (filterMode == AdapterProcessMini.FILTER_ANDROID) AdapterProcessMini.FILTER_ALL else AdapterProcessMini.FILTER_ANDROID
-            (process_list.adapter as AdapterProcessMini).updateFilterMode(filterMode)
-            process_filter.text = if (filterMode == AdapterProcessMini.FILTER_ANDROID) "应用" else "全部"
+            filterMode = if (filterMode == FloatProcessAdapter.FILTER_ANDROID) FloatProcessAdapter.FILTER_ALL else FloatProcessAdapter.FILTER_ANDROID
+            (process_list.adapter as FloatProcessAdapter).updateFilterMode(filterMode)
+            process_filter.text = if (filterMode == FloatProcessAdapter.FILTER_ANDROID) "应用" else "全部"
         }
 
         var lastClick: Int? = null
         process_list.setOnItemClickListener { _, _, position, id ->
             val current = System.currentTimeMillis()
-            val adapter = (process_list.adapter as AdapterProcessMini)
+            val adapter = (process_list.adapter as FloatProcessAdapter)
             val processInfo = adapter.getItem(position)
             if (processInfo.name.equals(context.packageName)) {
                 Toast.makeText(context, "自杀是不允许的~", Toast.LENGTH_SHORT).show()

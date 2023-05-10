@@ -15,7 +15,8 @@ import com.omarea.common.shell.KeepShellPublic
  */
 
 class WriteSettings {
-    fun checkPermission(context: Context): Boolean {
+    private fun checkPermission(context: Context, permission: String): Boolean = PermissionChecker.checkSelfPermission(context, permission) == PermissionChecker.PERMISSION_GRANTED
+    fun getPermission(context: Context): Boolean {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return Settings.System.canWrite(context)
@@ -28,15 +29,7 @@ class WriteSettings {
         }
     }
 
-    fun setPermissionByRoot(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            KeepShellPublic.doCmdSync("appops set ${context.packageName} WRITE_SETTINGS allow")
-        } else {
-            KeepShellPublic.doCmdSync("pm grant ${context.packageName} android.permission.WRITE_SETTINGS")
-        }
-    }
-
-    fun requestPermission(context: Context) {
+    fun setPermission(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // val selfPackageUri = Uri.parse("package:" + context.packageName)
             // val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, selfPackageUri)

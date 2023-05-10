@@ -21,97 +21,37 @@
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
+            <LinearLayout style="@style/ListCardItem">
 
-            <LinearLayout
+                <TextView
+                    style="@style/textTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="功能介绍" />
+
+                <TextView
+                    style="@style/textSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:text="本界面显示的是，你上次充电时，电量、温度、充电速度的变化过程" />
+
+                <TextView
+                    style="@style/textSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:text="你需要在充电时让本应用保持运行状态，才能获得数据" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/charge_state"
+                style="@style/ListCardItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <FrameLayout
-                    android:id="@+id/battery_capacity_wrap"
-                    style="@style/ListCardItem"
-                    android:padding="0dp"
-                    android:layout_width="0dp"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1">
-
-                    <com.omarea.ui.BatteryView
-                        android:layout_margin="@dimen/activity_vertical_margin"
-                        android:id="@+id/battery_capacity_chart"
-                        android:layout_width="140dp"
-                        android:layout_height="140dp"
-                        android:layout_gravity="center" />
-
-                    <TextView
-                        android:id="@+id/battery_size"
-                        style="@style/textSmall"
-                        android:layout_margin="6dp"
-                        android:text="00mAh"
-                        android:layout_gravity="start|bottom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/battrystatus_level"
-                        style="@style/textTitle"
-                        android:fontFamily="sans-serif-condensed-light"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:alpha="0.7"
-                        android:text="0%"
-                        android:textSize="30dp" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="170dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        style="@style/ListCardItem"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginLeft="0dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp">
-
-                        <TextView
-                            android:id="@+id/charge_state"
-                            style="@style/textSmall"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        style="@style/ListCardItem"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                        android:layout_marginBottom="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp">
-
-                        <TextView
-                            android:id="@+id/battery_status"
-                            style="@style/textSmall"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-                </LinearLayout>
-
-            </LinearLayout>
+                android:textAlignment="center"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold" />
 
             <LinearLayout
                 style="@style/ListCardItem"
@@ -165,54 +105,60 @@
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="vertical"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/in_card_item"
-                android:layout_marginVertical="@dimen/activity_vertical_margin"
-                android:layout_marginHorizontal="@dimen/activity_horizontal_margin">
+                style="@style/ListCardItem"
+                android:paddingEnd="0dp">
 
                 <TextView
-                    android:text="在寻找其它功能吗？"
-                    android:textColor="?android:textColorSecondary"
-                    style="@style/textDefault"
+                    style="@style/textTitle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-                <LinearLayout
-                    android:id="@+id/nav_more"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
+                    android:layout_height="wrap_content"
+                    android:text="使用方法" />
+
+                <TextView
+                    style="@style/textSmall"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/electricity_adj_unit"
-                        android:text="电流单位校准"
-                        style="@style/textTitle"
-                        android:layout_marginEnd="20dp"
-                        android:textColor="@color/colorAccent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                    <TextView
-                        android:id="@+id/more_battery_stats"
-                        android:text="耗电统计"
-                        style="@style/textTitle"
-                        android:layout_marginEnd="20dp"
-                        android:textColor="@color/colorAccent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                    <TextView
-                        android:id="@+id/charge_controller"
-                        android:visibility="gone"
-                        android:text="充电控制"
-                        style="@style/textTitle"
-                        android:layout_marginEnd="20dp"
-                        android:textColor="@color/colorAccent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="① 启动本应用" />
+
+                <TextView
+                    style="@style/textSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="② 连接充电器" />
+
+                <TextView
+                    style="@style/textSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="③ 熄灭屏幕，直至充电完成" />
+
+                <TextView
+                    style="@style/textSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="④ 查看曲线" />
+
+                <TextView
+                    style="@style/textSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="你需要让本应用保持后台运行，才能获得统计数据！" />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/electricity_adj_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="电流单位校准"
+                android:textColor="?android:colorAccent"
+                android:textSize="12sp" />
 
         </LinearLayout>
     </com.omarea.common.ui.OverScrollView>

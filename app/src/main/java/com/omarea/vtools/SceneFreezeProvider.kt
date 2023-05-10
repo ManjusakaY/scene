@@ -6,10 +6,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.net.Uri
-import android.util.Log
 import com.omarea.Scene
 import com.omarea.scene_mode.SceneMode
-import com.omarea.store.SceneConfigStore
 import com.omarea.store.SpfConfig
 
 class SceneFreezeProvider : ContentProvider() {
@@ -25,8 +23,7 @@ class SceneFreezeProvider : ContentProvider() {
         return config!!.getBoolean(SpfConfig.GLOBAL_SPF_FREEZE_XPOSED_OPEN, false)
     }
 
-    private val whiteList = arrayOf(
-            "android",
+    val whiteList = arrayOf(
             "com.android.quicksearchbox", // 搜索
             "com.android.settings", // 设置
             // nova
@@ -52,11 +49,10 @@ class SceneFreezeProvider : ContentProvider() {
             // Pixel 启动器
             "com.google.android.apps.nexuslauncher")
 
-    override fun getType(uri: Uri): String {
+    override fun getType(uri: Uri): String? {
         return "application/json"
     }
 
-    // 解冻
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
         if (values != null && values.containsKey("packageName") && values.containsKey("source")) {
             val packageName = values.get("packageName").toString()

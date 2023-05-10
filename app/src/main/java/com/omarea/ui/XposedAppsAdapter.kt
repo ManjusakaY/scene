@@ -19,6 +19,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
+/**
+ * Created by Hello on 2018/01/26.
+ */
+
 class XposedAppsAdapter(private val context: Context, apps: ArrayList<AppInfo>) : BaseAdapter() {
     private val appIconLoader = AppInfoLoader(context)
     private var keywords: String = ""
@@ -102,14 +106,18 @@ class XposedAppsAdapter(private val context: Context, apps: ArrayList<AppInfo>) 
         viewHolder.itemTitle?.text = keywordHightLight(if (item.sceneConfigInfo.freeze) ("*" + item.appName) else item.appName.toString())
 
         viewHolder.run {
-            val id = item.path
-            this.appPath = id
-            GlobalScope.launch(Dispatchers.Main) {
-                val icon = appIconLoader.loadIcon(item).await()
-                val imgView = imgView!!
-                if (icon != null && appPath == id) {
-                    imgView.setImageDrawable(icon)
+            if (item.icon == null) {
+                val id = item.path
+                this.appPath = id
+                GlobalScope.launch(Dispatchers.Main) {
+                    val icon = appIconLoader.loadIcon(item).await()
+                    val imgView = imgView!!
+                    if (icon != null && appPath == id) {
+                        imgView.setImageDrawable(icon)
+                    }
                 }
+            } else {
+                imgView!!.setImageDrawable(item.icon)
             }
         }
 

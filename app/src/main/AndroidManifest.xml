@@ -52,11 +52,6 @@
         android:requestLegacyExternalStorage="true"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
         <provider
-            android:name=".SceneUnfreezeProvider"
-            android:enabled="true"
-            android:exported="false"
-            android:authorities="com.omarea.vtools.SceneUnfreezeProvider" />
-        <provider
             android:name=".SceneFreezeProvider"
             android:enabled="true"
             android:exported="true"
@@ -164,7 +159,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="behind" />
         <activity
-            android:name=".activities.ActivityAppRetrieve"
+            android:name=".activities.ActivityHiddenApps"
             android:configChanges="keyboardHidden|orientation|uiMode"
             android:excludeFromRecents="true"
             android:label="[隐藏/卸载]的应用"
@@ -292,13 +287,13 @@
         <activity android:name=".activities.ActivityApplistions" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivitySwap" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivityImg" android:configChanges="orientation|screenSize" />
-        <activity android:name=".activities.ActivityChargeController" android:configChanges="orientation|screenSize" />
+        <activity android:name=".activities.ActivityBattery" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivityCharge" android:configChanges="orientation|screenSize" />
-        <activity android:name=".activities.ActivityPowerUtilization" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivityProcess" android:windowSoftInputMode="adjustPan" android:configChanges="orientation|screenSize" android:taskAffinity="activities.ActivityProcess" />
-        <activity android:name=".activities.ActivityModules" android:windowSoftInputMode="adjustPan" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivityMagisk" android:windowSoftInputMode="adjustResize" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivityCpuControl" android:configChanges="orientation|screenSize" />
+        <activity android:name=".activities.ActivityCpuModes" android:configChanges="orientation|screenSize" />
+        <activity android:name=".activities.ActivityBatteryStats" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivityAppConfig2" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivityAppXposedConfig" android:configChanges="orientation|screenSize" />
         <activity android:name=".activities.ActivitySystemScene" android:configChanges="orientation|screenSize" />

@@ -2,9 +2,9 @@ name: Android CI(Scene5)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ scene5 ]
   pull_request:
-    branches: [ main ]
+    branches: [ scene5 ]
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        ref: main
+        ref: scene5
 
     - uses: nttld/setup-ndk@v1
       id: setup-ndk
@@ -38,7 +38,7 @@ jobs:
     - name: Upload GitHub Actions artifact of vcpkg build
       uses: actions/upload-artifact@v2
       with:
-        name: scene5-dev
+        name: scene-dev
         path: ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk
 
     - name: Deploy
@@ -47,8 +47,8 @@ jobs:
       run: |
         cd ${{ github.workspace }}/app/build/outputs/apk/release/
         git init
-        git config user.name "Manjusaka"
-        git config user.email "3042627767@qq.com"
+        git config user.name "helloklf"
+        git config user.email "helloklf@outlook.com"
         git add .
         git commit -m "GitHub Actions Auto Builder at $(date +'%Y-%m-%d %H:%M:%S')"
         git push --force --quiet "https://${{ secrets.ACCESS_TOKEN }}@$GITHUB_REPO" master:master

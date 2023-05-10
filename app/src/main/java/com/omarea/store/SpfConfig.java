@@ -7,6 +7,7 @@ package com.omarea.store;
 
 public class SpfConfig {
     public static String POWER_CONFIG_SPF = "powercfg";
+    public static String HOME_QUICK_SWITCH = "home_quick_switch";
 
     public static String CHARGE_SPF = "charge"; //spf
     public static String CHARGE_SPF_QC_BOOSTER = "qc_booster"; //bool
@@ -53,7 +54,7 @@ public class SpfConfig {
     public static String GLOBAL_SPF_SCENE_LOG = "scene_logview";
     public static String GLOBAL_SPF_AUTO_EXIT = "auto_exit";
     public static String GLOBAL_SPF_NIGHT_MODE = "app_night_mode";
-    public static String GLOBAL_SPF_THEME = "app_theme5";
+    public static String GLOBAL_SPF_THEME = "app_theme2";
     public static String GLOBAL_SPF_MAC = "wifi_mac";
     public static String GLOBAL_SPF_MAC_AUTOCHANGE_MODE = "wifi_mac_autochange_mode";
     public static int GLOBAL_SPF_MAC_AUTOCHANGE_MODE_1 = 1;
@@ -64,17 +65,20 @@ public class SpfConfig {
     public static boolean GLOBAL_SPF_DYNAMIC_CONTROL_DEFAULT = false;
     public static String GLOBAL_SPF_DYNAMIC_CONTROL_STRICT = "dynamic_control_strict";
     public static String GLOBAL_SPF_DYNAMIC_CONTROL_DELAY = "dynamic_control_delay";
-    public static String GLOBAL_SPF_PROFILE_SOURCE = "scene_profile_source";
+    public static String GLOBAL_SPF_PROFILE_SOURCE = "scene4_profile_source";
     public static String GLOBAL_SPF_POWERCFG = "global_powercfg";
-    public static String GLOBAL_SPF_CONTRACT = "global_contract_scene5";
+    public static String GLOBAL_SPF_CONTRACT = "global_contract_scene4";
     public static String GLOBAL_SPF_POWERCFG_FRIST_NOTIFY = "global_powercfg_notifyed";
     public static String GLOBAL_SPF_LAST_UPDATE = "global_last_update";
     public static String GLOBAL_SPF_CURRENT_NOW_UNIT = "global_current_now_unit";
     public static int GLOBAL_SPF_CURRENT_NOW_UNIT_DEFAULT = -1000;
     public static String GLOBAL_SPF_FREEZE_ICON_NOTIFY = "freeze_icon_notify";
     public static String GLOBAL_SPF_FREEZE_SUSPEND = "freeze_suspend";
+    public static String GLOBAL_SPF_FREEZE_DELAY = "freeze_screen_off_delay"; // 息屏后处理延迟
     public static String GLOBAL_SPF_FREEZE_TIME_LIMIT = "freeze_suspend_time_limit";
+    public static String GLOBAL_SPF_FREEZE_ITEM_LIMIT = "freeze_suspend_item_limit";
     public static String GLOBAL_SPF_FREEZE_XPOSED_OPEN = "freeze_xposed_open";
+    public static String GLOBAL_SPF_FREEZE_CLICK_OPEN = "freeze_click_open";
     public static String GLOBAL_NIGHT_BLACK_NOTIFICATION = "night_black_notification";
 
     public static String SWAP_SPF = "swap"; //spf

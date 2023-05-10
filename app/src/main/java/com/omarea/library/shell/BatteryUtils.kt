@@ -1,7 +1,6 @@
 package com.omarea.library.shell
 
 import android.content.Context
-import android.os.Build
 import com.omarea.Scene
 import com.omarea.common.shared.FileWrite
 import com.omarea.common.shell.KeepShellPublic
@@ -48,13 +47,13 @@ class BatteryUtils {
                             }
                         } else if (info.startsWith("level")) {
                             if (!levelReaded) {
-                                batteryStatus.capacity = value.toInt()
+                                batteryStatus.level = value.toInt()
                                 levelReaded = true
                             } else continue
                         } else if (info.startsWith("temperature")) {
                             if (!tempReaded) {
                                 tempReaded = true
-                                batteryStatus.temperature = (value.toFloat() / 10.0)
+                                batteryStatus.temperature = (value.toFloat() / 10.0).toFloat()
                             } else continue
                         }
                     } catch (ex: java.lang.Exception) {
@@ -82,19 +81,14 @@ class BatteryUtils {
     private fun str2voltage(str: String): String {
         val value = str.substring(0, if (str.length > 4) 4 else str.length).toDouble()
 
-        return (when {
-            value > 3000 -> {
-                value / 1000
-            }
-            value > 300 -> {
-                value / 100
-            }
-            value > 30 -> {
-                value / 10
-            }
-            else -> {
-                value
-            }
+        return (if (value > 3000) {
+            value / 1000
+        } else if (value > 300) {
+            value / 100
+        } else if (value > 30) {
+            value / 10
+        } else {
+            value
         }).toString() + "v"
     }
 
@@ -102,16 +96,12 @@ class BatteryUtils {
         get() {
             val bms = "/sys/class/power_supply/bms/uevent"
             val battery = "/sys/class/power_supply/battery/uevent"
-            val path = (when {
-                RootFile.fileExists(bms) -> {
-                    bms
-                }
-                RootFile.fileExists(battery) -> {
-                    battery
-                }
-                else -> {
-                    ""
-                }
+            val path = (if (RootFile.fileExists(bms)) {
+                bms
+            } else if (RootFile.fileExists(battery)) {
+                battery
+            } else {
+                ""
             })
             if (path.isNotEmpty()) {
                 val batteryInfos = KernelProrp.getProp(path)
@@ -334,7 +324,7 @@ class BatteryUtils {
                         } else if (info.startsWith("POWER_SUPPLY_PD_AUTHENTICATION=")) {
                             val keyword = "POWER_SUPPLY_PD_AUTHENTICATION="
                             stringBuilder.append("PD认证 = ")
-                            pdAuth = info.substring(keyword.length, info.length) == "1"
+                            pdAuth = info.substring(keyword.length, info.length).equals("1")
                             stringBuilder.append(if (pdAuth) "已认证" else "未认证")
                         } else {
                             continue
@@ -362,14 +352,7 @@ class BatteryUtils {
 
     //快充是否支持修改充电速度设置
     fun qcSettingSupport(): Boolean {
-        return (
-            RootFile.itemExists("/sys/class/power_supply/battery/constant_charge_current_max") ||
-            (
-                // Xiaomi 11Pro/Ultra
-                mi11ProSeries &&
-                RootFile.itemExists("/sys/class/power_supply/battery/constant_charge_current")
-            )
-        )
+        return RootFile.itemExists("/sys/class/power_supply/battery/constant_charge_current_max")
     }
 
     fun stepChargeSupport(): Boolean {
@@ -384,12 +367,6 @@ class BatteryUtils {
         KernelProrp.setProp("/sys/class/power_supply/battery/step_charging_enabled", if (stepCharge) "1" else "0")
     }
 
-    // Xiaomi 11Pro/Ultra
-    private val mi11ProSeries : Boolean
-        get () {
-            return (Build.DEVICE == "mars" || Build.DEVICE == "star")
-        }
-
     private var useMainConstant: Boolean? = false // null
     fun getQcLimit(): String {
         if (useMainConstant == null) {
@@ -399,11 +376,7 @@ class BatteryUtils {
         var limit = if (useMainConstant == true) {
             KernelProrp.getProp("/sys/class/power_supply/main/constant_charge_current_max")
         } else {
-            if (mi11ProSeries) {
-                KernelProrp.getProp("/sys/class/power_supply/battery/constant_charge_current")
-            } else {
-                KernelProrp.getProp("/sys/class/power_supply/battery/constant_charge_current_max")
-            }
+            KernelProrp.getProp("/sys/class/power_supply/battery/constant_charge_current_max")
         }
         when {
             limit.length > 3 -> {
@@ -427,9 +400,7 @@ class BatteryUtils {
 
     //快充是否支持电池保护
     fun bpSettingSupport(): Boolean {
-        return RootFile.itemExists("/sys/class/power_supply/battery/battery_charging_enabled") ||
-                RootFile.itemExists("/sys/class/power_supply/battery/input_suspend") ||
-                RootFile.itemExists("/sys/class/qcom-battery/input_suspend")
+        return RootFile.itemExists("/sys/class/power_supply/battery/battery_charging_enabled") || RootFile.itemExists("/sys/class/power_supply/battery/input_suspend")
     }
 
     // 设置充电速度限制
@@ -454,7 +425,7 @@ class BatteryUtils {
                 }
 
                 return if (fastChargeScript.isNotEmpty()) {
-                    if (limit > 3000 && !mi11ProSeries) {
+                    if (limit > 3000) {
                         var current = 3000
                         while (current < (limit - 300) && current < 5000) {
                             if (KeepShellPublic.getInstance("setChargeInputLimit", true).doCmdSync("$fastChargeScript$current 1") == "error") {
@@ -504,7 +475,7 @@ class BatteryUtils {
         KernelProrp.setProp("/sys/class/power_supply/bms/charge_full", (mAh * 1000).toString())
     }
 
-    public fun getCapacity(): Int {
+    public fun getCpacity(): Int {
         val value = KernelProrp.getProp("/sys/class/power_supply/battery/capacity")
         return if (Regex("^[0-9]+").matches(value)) value.toInt() else 0
     }
@@ -531,14 +502,14 @@ class BatteryUtils {
                     raw.toFloat()
                 }
                 // 如果和系统反馈的电量差距超过5%，则认为数值无效，不再读取
-                return if (Math.abs(valueMA - approximate) > 5) {
-                    kernelCapacitySupported = false
-                    -1f
+                if (Math.abs(valueMA - approximate) > 5) {
+                    kernelCapacitySupported = false;
+                    return -1f
                 } else {
-                    valueMA
+                    return valueMA
                 }
             } catch (ex: java.lang.Exception) {
-                kernelCapacitySupported = false
+                kernelCapacitySupported = false;
             }
         }
         return -1f

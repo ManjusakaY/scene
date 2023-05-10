@@ -17,82 +17,58 @@
             android:src="@drawable/linux" />
     </FrameLayout>
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/itemModeName"
-            android:textSize="12dp"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="2dp"
-            android:layout_width="wrap_content"
-            android:minWidth="60dp"
-            android:paddingEnd="6dp"
-            android:layout_height="18dp"
-            android:layout_marginEnd="6dp"
-            android:text="@string/balance" />
-
-        <TextView
             android:id="@+id/itemTitle"
-            android:textColor="?android:textColorPrimary"
-            android:layout_alignTop="@id/itemModeName"
-            android:layout_toEndOf="@id/itemModeName"
-            android:textSize="12dp"
-            android:gravity="center_vertical"
+            style="@style/textTitle"
             android:layout_width="match_parent"
-            android:breakStrategy="simple"
-            android:layout_alignParentEnd="true"
-            android:layout_height="18dp"
+            android:layout_height="wrap_content"
+            android:lines="1"
             android:text="@string/app_name" />
 
         <LinearLayout
-            android:layout_below="@id/itemTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/itemModeName"
                 style="@style/textSmall"
-                android:layout_width="wrap_content"
+                android:layout_width="52dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:text="Avg:" />
+                android:text="@string/balance" />
+
             <TextView
                 android:id="@+id/itemAvgIO"
                 style="@style/textSmall"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:text="0000mA, 00.0°C" />
+                android:text="0mA" />
 
             <TextView
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                style="@style/textSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:text="MAX:" />
-            <TextView
                 android:id="@+id/itemTemperature"
-                android:layout_marginStart="4dp"
                 style="@style/textSmall"
                 android:minWidth="40dp"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00.0°C" />
+                android:text="0°C" />
 
             <TextView
                 android:id="@+id/itemCounts"
                 style="@style/textSmall"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="***" />
+                android:layout_weight="1"
+                android:text="0分钟"
+                android:textAlignment="textEnd" />
         </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

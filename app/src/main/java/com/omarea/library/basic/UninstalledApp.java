@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UninstalledApp {
-    // 卸载的、隐藏的
     public ArrayList<ApplicationInfo> getUninstalledApp(Context context) {
         ArrayList<ApplicationInfo> applicationInfos = new ArrayList<>();
         PackageManager pm = context.getPackageManager();

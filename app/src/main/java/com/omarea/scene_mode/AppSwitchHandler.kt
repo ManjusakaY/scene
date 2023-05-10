@@ -124,9 +124,7 @@ class AppSwitchHandler(private var context: AccessibilityScenceMode, override va
             if (!screenOn) {
                 notifyHelper.hideNotify()
                 stopTimer()
-
-                // 息屏30秒后冻结偏见应用
-                SceneMode.FreezeAppThread(context.applicationContext, true, 30).start()
+                setDelayFreezeApps()
 
                 // 息屏后自动切换为省电模式
                 if (dynamicCore && lastMode.isNotEmpty()) {
@@ -175,12 +173,17 @@ class AppSwitchHandler(private var context: AccessibilityScenceMode, override va
         }
     }
 
+    private fun setDelayFreezeApps() {
+        val delay = spfGlobal.getInt(SpfConfig.GLOBAL_SPF_FREEZE_DELAY, 0)
+        SceneMode.FreezeAppThread(context.applicationContext, true, if (delay > 0) (delay * 60) else 0).start()
+    }
+
     /**
      * 更新通知
      */
     private fun updateModeNoitfy(saveLog: Boolean = false) {
         if (screenOn) {
-            notifyHelper.notify()
+            notifyHelper.notify(saveLog)
         }
     }
 

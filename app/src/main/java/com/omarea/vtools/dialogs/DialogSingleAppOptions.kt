@@ -26,6 +26,7 @@ import java.io.File
  */
 
 class DialogSingleAppOptions(context: Activity, var app: AppInfo, handler: Handler) : DialogAppOptions(context, arrayListOf<AppInfo>(app), handler) {
+
     fun showSingleAppOptions() {
         when (app.appType) {
             AppInfo.AppType.USER -> showUserAppOptions()
@@ -38,15 +39,19 @@ class DialogSingleAppOptions(context: Activity, var app: AppInfo, handler: Handl
     }
 
     private fun loadAppIcon(app: AppInfo): Drawable? {
-        var icon: Drawable? = null
-        try {
-            val installInfo = context.packageManager.getPackageInfo(app.packageName.toString(), 0)
-            icon = installInfo.applicationInfo.loadIcon(context.packageManager)
-            return icon
-        } catch (ex: Exception) {
-        } finally {
+        if (app.icon != null) {
+            return app.icon
+        } else {
+            var icon: Drawable? = null
+            try {
+                val installInfo = context.packageManager.getPackageInfo(app.packageName.toString(), 0)
+                icon = installInfo.applicationInfo.loadIcon(context.packageManager)
+                return icon
+            } catch (ex: Exception) {
+            } finally {
+            }
+            return null
         }
-        return null
     }
 
     /**
@@ -215,7 +220,7 @@ class DialogSingleAppOptions(context: Activity, var app: AppInfo, handler: Handl
 
         view.findViewById<View>(R.id.app_install).run {
             setOnClickListener {
-                restoreAll(apk = true)
+                restoreAll(apk = true, data = false)
             }
         }
         val dataExists = backupDataExists(app.packageName)
@@ -223,14 +228,14 @@ class DialogSingleAppOptions(context: Activity, var app: AppInfo, handler: Handl
             visibility = if (dataExists) View.VISIBLE else View.GONE
             setOnClickListener {
                 dialog.dismiss()
-                restoreAll(apk = true)
+                restoreAll(apk = true, data = true)
             }
         }
         view.findViewById<View>(R.id.app_restore_data).run {
             visibility = if (dataExists) View.VISIBLE else View.GONE
             setOnClickListener {
                 dialog.dismiss()
-                restoreAll(apk = false)
+                restoreAll(apk = false, data = true)
             }
         }
         view.findViewById<View>(R.id.app_copy_name).setOnClickListener {
@@ -306,10 +311,10 @@ class DialogSingleAppOptions(context: Activity, var app: AppInfo, handler: Handl
         val appDir = File(app.path.toString()).parent
         val result = if (appDir == "/data/app") { // /data/app/xxx.apk
             val outPutPath = "/system/app/"
-            MagiskExtend.createFileReplaceModule(outPutPath, app.path.toString(), app.packageName, app.appName)
+            MagiskExtend.createFileReplaceModule(outPutPath, app.path.toString(), app.packageName.toString(), app.appName.toString())
         } else { // /data/app/xxx.xxx.xxx/xxx.apk
             val outPutPath = "/system/app/" + app.packageName
-            MagiskExtend.createFileReplaceModule(outPutPath, appDir, app.packageName, app.appName)
+            MagiskExtend.createFileReplaceModule(outPutPath, appDir, app.packageName.toString(), app.appName.toString())
         }
         if (result) {
             DialogHelper.helpInfo(context, "已通过Magisk完成操作，请重启手机~", "")

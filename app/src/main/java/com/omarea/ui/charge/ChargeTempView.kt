@@ -1,7 +1,10 @@
 package com.omarea.ui.charge
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
 import com.omarea.store.ChargeSpeedStore
@@ -9,7 +12,6 @@ import com.omarea.vtools.R
 
 class ChargeTempView : View {
     private lateinit var storage: ChargeSpeedStore
-    private val dashPathEffect = DashPathEffect(floatArrayOf(4f, 8f), 0f)
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -58,7 +60,7 @@ class ChargeTempView : View {
         samples.sortBy { it.capacity }
         // Toast.makeText(context, "" + samples.map { "" + it.capacity + ":" + it.temperature }.joinToString(",    "), Toast.LENGTH_SHORT).show()
 
-        val potintRadius = 12f
+        val potintRadius = 4f
         val paint = Paint()
         paint.strokeWidth = 2f
 
@@ -76,28 +78,39 @@ class ChargeTempView : View {
         val innerPadding = dpSize * 24f
         val yAxisWidth = paint.measureText(maxTemperature.toString()  + "°C")
 
-        val minY = 30
-        val maxY = if (maxTemperature != null && maxTemperature > 50) (maxTemperature.toInt() + 2) else 51
+        val maxY =
+                if (maxTemperature != null && maxTemperature > 50) (maxTemperature.toInt() + 2) else 51
 
         val ratioX = (this.width - innerPadding - yAxisWidth) * 1.0 / 100 // 横向比率
-        val ratioY = ((this.height - innerPadding - innerPadding) * 1.0 / (maxY - minY)).toFloat() // 纵向比率
+        val ratioY = ((this.height - innerPadding - innerPadding) * 1.0 / maxY).toFloat() // 纵向比率
         val startY = height - innerPadding
 
         paint.textAlign = Paint.Align.CENTER
-        paint.strokeWidth = 1f
         for (point in 0..101) {
-            if (point % 20 == 0) {
+            if (point % 10 == 0) {
                 paint.color = Color.parseColor("#888888")
                 val text = (point).toString() + "%"
                 canvas.drawText(
-                    text,
-                    (point * ratioX).toInt() + yAxisWidth,
-                    this.height - innerPadding + textSize + (dpSize * 2),
-                    paint
+                        text,
+                        (point * ratioX).toInt() + yAxisWidth,
+                        this.height - innerPadding + textSize + (dpSize * 2),
+                        paint
+                )
+                canvas.drawCircle(
+                        (point * ratioX).toInt() + yAxisWidth,
+                        this.height - innerPadding,
+                        potintRadius,
+                        paint
                 )
             }
-            if (point % 10 == 0) {
-                paint.color = Color.parseColor("#40888888")
+            if (point % 5 == 0) {
+                if (point == 0) {
+                    paint.strokeWidth = potintRadius
+                    paint.color = Color.parseColor("#888888")
+                } else {
+                    paint.strokeWidth = 2f
+                    paint.color = Color.parseColor("#aa888888")
+                }
                 canvas.drawLine(
                         (point * ratioX).toInt() + yAxisWidth, innerPadding,
                         (point * ratioX).toInt() + yAxisWidth, this.height - innerPadding, paint
@@ -106,38 +119,46 @@ class ChargeTempView : View {
         }
 
         paint.textAlign = Paint.Align.LEFT
-        paint.strokeWidth = 2f
-        for (point in 0..(maxY - minY)) {
-            val y = innerPadding + ((maxY - minY - point) * ratioY).toInt()
+        for (point in 0..maxY) {
             if (point % 5 == 0) {
                 if (point > 0) {
                     paint.color = Color.parseColor("#888888")
                     canvas.drawText(
-                        "${point+minY}°C",
-                        0f,
-                        y + textSize / 2f,
-                        paint
+                            point.toString() + "°C",
+                            0f,
+                            innerPadding + ((maxY - point) * ratioY).toInt() + textSize / 2f,
+                            paint
+                    )
+                    canvas.drawCircle(
+                            yAxisWidth,
+                            innerPadding + ((maxY - point) * ratioY).toInt(),
+                            potintRadius,
+                            paint
                     )
                 }
-                paint.pathEffect = null
+                paint.color = Color.parseColor("#aa888888")
             } else {
-                paint.pathEffect = dashPathEffect
+                paint.color = Color.parseColor("#40888888")
             }
-            paint.color = Color.parseColor("#40888888")
+            if (point == 0) {
+                paint.strokeWidth = potintRadius
+                paint.color = Color.parseColor("#888888")
+            } else {
+                paint.strokeWidth = 2f
+            }
             canvas.drawLine(
-                yAxisWidth,
-                y,
-                (this.width - innerPadding),
-                y,
-                paint
+                    yAxisWidth,
+                    innerPadding + ((maxY - point) * ratioY).toInt(),
+                    (this.width - innerPadding),
+                    innerPadding + ((maxY - point) * ratioY).toInt(),
+                    paint
             )
         }
 
-        paint.pathEffect = null
-        paint.color = Color.parseColor("#801474e4")
+        paint.color = getColorAccent()
         for (sample in samples) {
             val pointX = (sample.capacity * ratioX).toFloat() + innerPadding
-            val temperature:Float = if (sample.temperature > minY) (sample.temperature - minY) else 0f
+            val temperature = sample.temperature
 
             if (isFirstPoint) {
                 pathFilterAlpha.moveTo(pointX, startY - (temperature * ratioY))
@@ -151,9 +172,9 @@ class ChargeTempView : View {
         paint.reset()
         paint.isAntiAlias = true
         paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 8f
+        paint.strokeWidth = 4f
 
-        paint.color = Color.parseColor("#1474e4")
+        paint.color = Color.parseColor("#8BC34A")
         canvas.drawPath(pathFilterAlpha, paint)
 
         // paint.textSize = dpSize * 12f

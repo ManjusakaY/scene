@@ -23,7 +23,7 @@ import com.omarea.model.AppInfo
 import com.omarea.scene_mode.ModeSwitcher
 import com.omarea.store.SceneConfigStore
 import com.omarea.store.SpfConfig
-import com.omarea.ui.AdapterSceneMode
+import com.omarea.ui.SceneModeAdapter
 import com.omarea.utils.AppListHelper
 import com.omarea.vtools.R
 import com.omarea.vtools.dialogs.DialogAppOrientation
@@ -118,7 +118,7 @@ class ActivityAppConfig2 : ActivityBase() {
                                 }.apply()
 
                                 setAppRowDesc(item)
-                                (parent.adapter as AdapterSceneMode).updateRow(position, view)
+                                (parent.adapter as SceneModeAdapter).updateRow(position, view)
                                 notifyService(app, "" + mode)
                             }
                         }).show()
@@ -167,7 +167,7 @@ class ActivityAppConfig2 : ActivityBase() {
         if (requestCode == REQUEST_APP_CONFIG && data != null && displayList != null) {
             try {
                 if (resultCode == AppCompatActivity.RESULT_OK) {
-                    val adapter = (scene_app_list.adapter as AdapterSceneMode)
+                    val adapter = (scene_app_list.adapter as SceneModeAdapter)
                     var index = -1
                     val packageName = data.extras!!.getString("app")
                     for (i in 0 until displayList!!.size) {
@@ -180,7 +180,7 @@ class ActivityAppConfig2 : ActivityBase() {
                     }
                     val item = adapter.getItem(index)
                     setAppRowDesc(item)
-                    (scene_app_list.adapter as AdapterSceneMode?)?.run {
+                    (scene_app_list.adapter as SceneModeAdapter?)?.run {
                         updateRow(index, lastClickRow!!)
                     }
                     //loadList(false)
@@ -241,7 +241,7 @@ class ActivityAppConfig2 : ActivityBase() {
 
     private fun setListData(dl: ArrayList<AppInfo>?, lv: OverScrollListView) {
         Scene.post {
-            lv.adapter = AdapterSceneMode(
+            lv.adapter = SceneModeAdapter(
                     this,
                     dl!!,
                     globalSPF.getString(SpfConfig.GLOBAL_SPF_POWERCFG_FIRST_MODE, ModeSwitcher.DEFAULT)!!
@@ -315,7 +315,7 @@ class ActivityAppConfig2 : ActivityBase() {
 
     private fun setAppRowDesc(item: AppInfo) {
         item.selected = false
-        val packageName = item.packageName
+        val packageName = item.packageName.toString()
         item.stateTags = spfPowercfg.getString(packageName, "")
         val configInfo = sceneConfigStore.getAppConfig(packageName)
         item.sceneConfigInfo = configInfo

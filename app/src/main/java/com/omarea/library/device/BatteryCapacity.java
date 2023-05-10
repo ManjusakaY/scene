@@ -17,7 +17,8 @@ public class BatteryCapacity {
 
         try {
             mPowerProfile = Class.forName(POWER_PROFILE_CLASS).getConstructor(Context.class).newInstance(context);
-            batteryCapacity = (int) ((double) Class.forName(POWER_PROFILE_CLASS).getMethod("getBatteryCapacity").invoke(mPowerProfile));
+            batteryCapacity = (double) Class.forName(POWER_PROFILE_CLASS).getMethod("getBatteryCapacity").invoke(mPowerProfile);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
