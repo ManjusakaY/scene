@@ -1,11 +1,10 @@
-
-name: Android CI
+name: Android CI(Scene5)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ scene5 ]
   pull_request:
-    branches: [ master ]
+    branches: [ scene5 ]
 
 jobs:
   build:
@@ -14,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: scene5
 
     - uses: nttld/setup-ndk@v1
       id: setup-ndk
