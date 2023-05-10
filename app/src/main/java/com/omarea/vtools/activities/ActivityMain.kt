@@ -144,7 +144,7 @@ class ActivityMain : ActivityBase() {
         } else {
             FragmentNotRoot()
         }))
-        tabIconHelper2.newTabSpec(getString(R.string.app_donate), getDrawable(R.drawable.app_donate)!!, FragmentDonate())
+        tabIconHelper2.newTabSpec(getString(R.string.menu_additional), getDrawable(R.drawable.menu_additional)!!, FragmentDonate())
         tab_content.adapter = tabIconHelper2.adapter
         tab_list.getTabAt(1)?.select() // 默认选中第二页
 
